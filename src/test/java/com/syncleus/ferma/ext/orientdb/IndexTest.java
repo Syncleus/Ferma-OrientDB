@@ -44,7 +44,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 
-public class OrientDBFermaIndexTest extends AbstractOrientDBTest {
+public class IndexTest extends AbstractOrientDBTest {
 
 	private final static int nMembers = 2000;
 	private final static int nChecks = 4000;
@@ -63,13 +63,6 @@ public class OrientDBFermaIndexTest extends AbstractOrientDBTest {
 	 * Setup some indices. This is highly orientdb specific and may not be easy so setup using blueprint API.
 	 */
 	private void setupTypesAndIndices() {
-		try (Tx tx = graph.tx()) {
-			OrientGraph g = ((OrientGraph) ((DelegatingFramedOrientGraph) tx.getGraph()).getBaseGraph());
-			// g.setUseClassForEdgeLabel(true);
-			g.setUseLightweightEdges(false);
-			g.setUseVertexFieldsForEdgeLabels(false);
-		}
-
 		try (Tx tx = graph.tx()) {
 			OrientGraph g = ((OrientGraph) ((DelegatingFramedOrientGraph) tx.getGraph()).getBaseGraph());
 
@@ -109,20 +102,12 @@ public class OrientDBFermaIndexTest extends AbstractOrientDBTest {
 		}
 
 		try (Tx tx = graph.tx()) {
-			OrientGraph graph = ((OrientGraph) ((DelegatingFramedOrientGraph) tx.getGraph()).getBaseGraph());
 			assertEquals(nMembers, g.getMembers().size());
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < nChecks; i++) {
 				int nPerson = (int) (Math.random() * persons.size());
 				String name = "personName_" + nPerson;
-
-				// assertEquals(name, tx.getGraph().getFramedVerticesExplicit("Person.name", name, Person.class).iterator().next().getName());
-
 				assertTrue(tx.getGraph().getFramedVerticesExplicit("Person.name", name, Person.class).iterator().hasNext());
-
-				// OrientDB specific api
-				// Iterable<Vertex> vertices = graph.getVertices(Person.class.getSimpleName(), new String[] { "name" },new Object[] {name});
-				// assertTrue(vertices.iterator().hasNext());
 			}
 			long dur = System.currentTimeMillis() - start;
 			double perCheck = ((double) dur / (double) nChecks);

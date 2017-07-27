@@ -34,7 +34,7 @@ import org.junit.Test;
 import com.syncleus.ferma.ext.orientdb.model.Person;
 import com.syncleus.ferma.tx.Tx;
 
-public class OrientDBFermaMultithreadingReducedTest extends AbstractOrientDBTest {
+public class MultithreadingReducedTest extends AbstractOrientDBTest {
 
 	private Person p;
 
@@ -47,7 +47,6 @@ public class OrientDBFermaMultithreadingReducedTest extends AbstractOrientDBTest
 		try (Tx tx = graph.tx()) {
 			String name = "SomeName";
 			p = addPersonWithFriends(tx.getGraph(), name);
-			// tx.getGraph().commit();
 			tx.success();
 			runAndWait(() -> {
 				try (Tx tx2 = graph.tx()) {
@@ -69,7 +68,6 @@ public class OrientDBFermaMultithreadingReducedTest extends AbstractOrientDBTest
 	@Test
 	public void testMultithreading() {
 
-		// fg.commit();
 		runAndWait(() -> {
 			Person reloaded;
 			try (Tx tx = graph.tx()) {

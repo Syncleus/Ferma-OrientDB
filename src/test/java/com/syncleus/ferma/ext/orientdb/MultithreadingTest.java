@@ -35,9 +35,10 @@ import org.junit.Test;
 
 import com.syncleus.ferma.VertexFrame;
 import com.syncleus.ferma.ext.orientdb.model.Person;
+import com.syncleus.ferma.ext.orientdb.util.TestThread;
 import com.syncleus.ferma.tx.Tx;
 
-public class OrientDBFermaMultithreadingTest extends AbstractOrientDBTest {
+public class MultithreadingTest extends AbstractOrientDBTest {
 
 	Person p;
 
@@ -99,9 +100,6 @@ public class OrientDBFermaMultithreadingTest extends AbstractOrientDBTest {
 				System.out.println(vertex.toString());
 			}
 		}
-		// try (Tx tx = db.tx()) {
-		// manipulatePerson(tx.getGraph(), reference.get());
-		// }
 	}
 
 }

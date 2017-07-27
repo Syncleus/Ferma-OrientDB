@@ -25,30 +25,27 @@
  */
 package com.syncleus.ferma.ext.orientdb;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import org.junit.Test;
 
-public class TestThread extends Thread {
+import com.syncleus.ferma.VertexFrame;
+import com.syncleus.ferma.ext.orientdb.model.IJob;
+import com.syncleus.ferma.ext.orientdb.model.Job;
+import com.syncleus.ferma.tx.Tx;
 
-	private int id;
-	private CyclicBarrier barrier;
+public class TypeResolvingTest extends AbstractOrientDBTest {
 
-	public TestThread(int id, CyclicBarrier barrier) {
-		this.id = id;
-		this.barrier = barrier;
-	}
+	@Test
+	public void testCasting() {
+		try (Tx tx = graph.tx()) {
+			Job jobCTO = tx.getGraph().addFramedVertex(Job.class);
+			jobCTO.setName("Chief Technology Officer");
 
-	@Override
-	public void run() {
-		System.out.println("Waiting in thread " + id);
-		try {
-			barrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			VertexFrame frame = tx.getGraph().v().has(Job.class).next();
+			System.out.println(frame.getClass().getName());
+
+			IJob job = tx.getGraph().v().has(Job.class).nextOrDefaultExplicit(Job.class, null);
+			System.out.println(job.getName());
 		}
-		System.out.println("Release in thread " + id);
-
 	}
 
 }

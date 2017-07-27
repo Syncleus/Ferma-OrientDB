@@ -23,7 +23,7 @@
  * For additional credits (generally to people who reported problems)
  * see CREDITS file.
  */
-package com.orientechnologies.orient.core.exception;
+package com.syncleus.ferma.ext.orientdb;
 
 import static com.syncleus.ferma.ext.orientdb.util.TestUtils.run;
 import static org.junit.Assert.assertEquals;
@@ -34,11 +34,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
-import com.syncleus.ferma.ext.orientdb.AbstractOrientDBTest;
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.syncleus.ferma.ext.orientdb.model.Person;
 import com.syncleus.ferma.tx.Tx;
 
-public class OrientDBTxTest extends AbstractOrientDBTest {
+public class TxTest extends AbstractOrientDBTest {
 
 	private Person p;
 
@@ -54,13 +54,14 @@ public class OrientDBTxTest extends AbstractOrientDBTest {
 		}
 
 		CyclicBarrier b = new CyclicBarrier(3);
+		addFriendToPersonInThread(p, b);
+		addFriendToPersonInThread(p, b);
 
-		addFriendToPerson(p, b);
-		addFriendToPerson(p, b);
-
+		// Wait until both threads have started their transactions
 		b.await();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		try (Tx tx = graph.tx()) {
+			// Reload the person in a fresh transaction
 			p = tx.getGraph().getFramedVertexExplicit(Person.class, p.getId());
 			int nFriendsAfter = p.getFriends().size();
 			assertEquals(nFriendsBefore + 2, nFriendsAfter);
@@ -68,35 +69,39 @@ public class OrientDBTxTest extends AbstractOrientDBTest {
 
 	}
 
-	private void addFriendToPerson(Person p, CyclicBarrier b) {
+	/**
+	 * Add a new friend to the provided person and wait on the barrier before finishing the transaction. This is useful if you want to produce a
+	 * {@link OConcurrentModificationException}
+	 * 
+	 * @param p
+	 * @param b
+	 */
+	private void addFriendToPersonInThread(Person p, CyclicBarrier b) {
 		run(() -> {
 			for (int retry = 0; retry < 10; retry++) {
+
 				System.out.println("Try: " + retry);
 				boolean doRetry = false;
-				// try {
 				try (Tx tx = graph.tx()) {
-					addFriend(tx.getGraph(), p);
+					// Reload the person since the person vertex could have been altered by another transaction.
+					Person p1 = tx.getGraph().getFramedVertexExplicit(Person.class, p.getId());
+
+					addFriend(tx.getGraph(), p1);
 					tx.success();
 					if (retry == 0) {
 						try {
 							b.await();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
-					break;
 				} catch (OConcurrentModificationException e) {
-					// throw e;
-					// break;
+					System.out.println("Got modification exception on run {" + retry + "}. Invoking retry.");
+					doRetry = true;
 				}
-				// } catch (OConcurrentModificationException e) {
-				// System.out.println("Error " + OConcurrentModificationException.class.getName());
-				// doRetry = true;
-				// }
-				// if (!doRetry) {
-				// break;
-				// }
+				if (!doRetry) {
+					break;
+				}
 				System.out.println("Retry");
 			}
 		});

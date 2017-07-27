@@ -23,30 +23,32 @@
  * For additional credits (generally to people who reported problems)
  * see CREDITS file.
  */
-package com.syncleus.ferma.ext.orientdb;
+package com.syncleus.ferma.ext.orientdb.util;
 
-import org.junit.Test;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
-import com.syncleus.ferma.VertexFrame;
-import com.syncleus.ferma.ext.orientdb.model.IJob;
-import com.syncleus.ferma.ext.orientdb.model.Job;
-import com.syncleus.ferma.tx.Tx;
+public class TestThread extends Thread {
 
-public class FermaOrientDBTypeResolvingTest extends AbstractOrientDBTest {
+	private int id;
+	private CyclicBarrier barrier;
 
-	@Test
-	public void testCasting() {
-		try (Tx tx = graph.tx()) {
-			Job jobCTO = tx.getGraph().addFramedVertex(Job.class);
-			jobCTO.setName("Chief Technology Officer");
-			
-			VertexFrame frame = tx.getGraph().v().has(Job.class).next();
-			System.out.println(frame.getClass().getName());
+	public TestThread(int id, CyclicBarrier barrier) {
+		this.id = id;
+		this.barrier = barrier;
+	}
 
-			//IJob job = (IJob) fg.v().has(Job.class).nextOrDefaultExplicit(Job.class, null);
-			IJob job = tx.getGraph().v().has(Job.class).nextOrDefaultExplicit(Job.class, null);
-			System.out.println(job.getName());
+	@Override
+	public void run() {
+		System.out.println("Waiting in thread " + id);
+		try {
+			barrier.await();
+		} catch (InterruptedException | BrokenBarrierException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		System.out.println("Release in thread " + id);
+
 	}
 
 }
