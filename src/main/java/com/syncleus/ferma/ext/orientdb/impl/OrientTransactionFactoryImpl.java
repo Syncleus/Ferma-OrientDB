@@ -25,17 +25,17 @@
  */
 package com.syncleus.ferma.ext.orientdb.impl;
 
-import com.syncleus.ferma.ext.orientdb.OrientDBFactory;
+import com.syncleus.ferma.ext.orientdb.OrientTransactionFactory;
 import com.syncleus.ferma.ext.orientdb.OrientDBTypeResolver;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
-public class OrientDBTxFactoryImpl implements OrientDBFactory {
+public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 
 	protected OrientGraphFactory factory;
 
 	private OrientDBTypeResolver typeResolver;
 
-	public OrientDBTxFactoryImpl(OrientGraphFactory factory, String... basePaths) {
+	public OrientTransactionFactoryImpl(OrientGraphFactory factory, String... basePaths) {
 		this.factory = factory;
 		this.typeResolver = new OrientDBTypeResolver(basePaths);
 	}

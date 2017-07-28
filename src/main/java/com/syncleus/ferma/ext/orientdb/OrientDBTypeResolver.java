@@ -38,6 +38,8 @@ import com.syncleus.ferma.typeresolvers.TypeResolver;
 import com.tinkerpop.blueprints.Element;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+import com.tinkerpop.blueprints.util.wrappers.wrapped.WrappedEdge;
+import com.tinkerpop.blueprints.util.wrappers.wrapped.WrappedElement;
 
 public class OrientDBTypeResolver implements TypeResolver {
 
@@ -49,6 +51,9 @@ public class OrientDBTypeResolver implements TypeResolver {
 
 	@Override
 	public <T> Class<? extends T> resolve(Element element, Class<T> kind) {
+		if (element instanceof WrappedElement) {
+			element = ((WrappedElement) element).getBaseElement();
+		}
 		if (element instanceof OrientVertex) {
 			OrientVertex orientVertex = (OrientVertex) element;
 			String name = orientVertex.getType().getName();

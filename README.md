@@ -27,13 +27,39 @@ To include OrientDB extensions to Ferma include the following Maven dependencies
 ## Examples
 
 ```java
-  OrientGraphFactory graphFactory = new OrientGraphFactory("memory:tinkerpop").setupPool(4, 10);
-  OrientDBTxFactory graph = new OrientDBTxFactory(graphFactory, Vertx.vertx());
-  
-  try (Tx tx = graph.tx()) {
-     Person p = tx.getGraph().addFramedVertex(Person.class);
-     tx.success();
-  }
+    // Setup the orientdb graph factory from which the transaction factory will create transactions
+    OrientGraphFactory graphFactory = new OrientGraphFactory("memory:tinkerpop").setupPool(4, 10);
+    TxFactory graph = new OrientTransactionFactoryImpl(graphFactory, "com.syncleus.ferma.ext.orientdb.model");
+
+    try (Tx tx = graph.tx()) {
+        Person joe = tx.getGraph().addFramedVertex(Person.class);
+        joe.setName("Joe");
+        Person hugo = tx.getGraph().addFramedVertex(Person.class);
+        hugo.setName("Hugo");
+
+        // Both are mutal friends
+        joe.addFriend(hugo);
+        hugo.addFriend(joe);
+        tx.success();
+    }
+
+    try (Tx tx = graph.tx()) {
+        for (Person p : tx.getGraph().getFramedVerticesExplicit(Person.class)) {
+            System.out.println("Found person with name: " + p.getName());
+        }
+    }
+
+    String result = graph.tx((tx) -> {
+        Person hugo = tx.getGraph().getFramedVertices("name", "Hugo", Person.class).iterator().next();
+        StringBuffer sb = new StringBuffer();
+        sb.append("Hugo's friends:");
+
+        for (Person p : hugo.getFriends()) {
+            sb.append(" " + p.getName());
+        }
+        return sb.toString();
+    });
+    System.out.println(result);
 ```
 
 ## Obtaining the Source

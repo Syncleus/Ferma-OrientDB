@@ -8,7 +8,7 @@ import com.syncleus.ferma.tx.TxFactory;
 import com.syncleus.ferma.tx.TxHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
-public interface OrientDBFactory extends TxFactory {
+public interface OrientTransactionFactory extends TxFactory {
 
 	/**
 	 * Return the configured orientdb graph factory from which transaction are created.
