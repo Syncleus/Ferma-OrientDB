@@ -23,26 +23,36 @@
  * For additional credits (generally to people who reported problems)
  * see CREDITS file.
  */
-package com.syncleus.ferma.ext.orientdb;
+package com.syncleus.ferma.ext.orientdb.impl;
 
-import com.syncleus.ferma.tx.Tx;
-import com.syncleus.ferma.tx.TxFactory;
+import com.syncleus.ferma.ext.orientdb.OrientDBFactory;
+import com.syncleus.ferma.ext.orientdb.OrientDBTypeResolver;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
-public class OrientDBTxFactory implements TxFactory {
+public class OrientDBTxFactoryImpl implements OrientDBFactory {
 
 	protected OrientGraphFactory factory;
 
 	private OrientDBTypeResolver typeResolver;
 
-	public OrientDBTxFactory(OrientGraphFactory factory, String... basePaths) {
+	public OrientDBTxFactoryImpl(OrientGraphFactory factory, String... basePaths) {
 		this.factory = factory;
 		this.typeResolver = new OrientDBTypeResolver(basePaths);
 	}
 
 	@Override
-	public Tx tx() {
-		return new OrientDBTx(factory, typeResolver);
+	public OrientGraphFactory getFactory() {
+		return factory;
+	}
+
+	@Override
+	public OrientDBTypeResolver getTypeResolver() {
+		return typeResolver;
+	}
+
+	@Override
+	public int getMaxRetry() {
+		return 10;
 	}
 
 }

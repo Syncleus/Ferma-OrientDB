@@ -28,18 +28,19 @@ package com.syncleus.ferma.ext.orientdb;
 import org.junit.Before;
 
 import com.syncleus.ferma.FramedGraph;
+import com.syncleus.ferma.ext.orientdb.impl.OrientDBTxFactoryImpl;
 import com.syncleus.ferma.ext.orientdb.model.Person;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 public class AbstractOrientDBTest {
 
 	protected OrientGraphFactory graphFactory;
-	protected OrientDBTxFactory graph;
+	protected OrientDBTxFactoryImpl graph;
 
 	@Before
 	public void setupDB() {
 		graphFactory = new OrientGraphFactory("memory:tinkerpop" + System.currentTimeMillis()).setupPool(4, 10);
-		graph = new OrientDBTxFactory(graphFactory, "com.syncleus.ferma.ext.orientdb.model");
+		graph = new OrientDBTxFactoryImpl(graphFactory, "com.syncleus.ferma.ext.orientdb.model");
 	}
 
 	/**
