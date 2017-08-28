@@ -25,20 +25,19 @@
  */
 package com.syncleus.ferma.ext.orientdb;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.tinkerpop.gremlin.orientdb.OrientEdge;
+import org.apache.tinkerpop.gremlin.orientdb.OrientVertex;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedElement;
 
 import com.syncleus.ferma.AbstractEdgeFrame;
 import com.syncleus.ferma.AbstractVertexFrame;
 import com.syncleus.ferma.EdgeFrame;
 import com.syncleus.ferma.VertexFrame;
 import com.syncleus.ferma.ext.ElementTypeClassCache;
-import com.syncleus.ferma.traversals.EdgeTraversal;
-import com.syncleus.ferma.traversals.VertexTraversal;
 import com.syncleus.ferma.typeresolvers.TypeResolver;
-import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.impls.orient.OrientEdge;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
-import com.tinkerpop.blueprints.util.wrappers.wrapped.WrappedElement;
 
 public class OrientDBTypeResolver implements TypeResolver {
 
@@ -51,16 +50,16 @@ public class OrientDBTypeResolver implements TypeResolver {
 	@Override
 	public <T> Class<? extends T> resolve(Element element, Class<T> kind) {
 		if (element instanceof WrappedElement) {
-			element = ((WrappedElement) element).getBaseElement();
+			element = ((WrappedElement<Element>) element).getBaseElement();
 		}
 		if (element instanceof OrientVertex) {
 			OrientVertex orientVertex = (OrientVertex) element;
-			String name = orientVertex.getType().getName();
+			String name = orientVertex.label();
 			return resolve(name, kind);
 		}
 		if (element instanceof OrientEdge) {
 			OrientEdge orientEdge = (OrientEdge) element;
-			String name = orientEdge.getType().getSuperClass().getName();
+			String name = orientEdge.getRawElement().getSchemaType().get().getSuperClass().getName();
 			return resolve(name, kind);
 		}
 		return null;
@@ -80,12 +79,12 @@ public class OrientDBTypeResolver implements TypeResolver {
 	public Class<?> resolve(Element element) {
 		if (element instanceof OrientVertex) {
 			OrientVertex orientVertex = (OrientVertex) element;
-			String name = orientVertex.getType().getName();
+			String name = orientVertex.label();
 			return this.elementTypCache.forName(name);
 		}
 		if (element instanceof OrientEdge) {
 			OrientEdge orientEdge = (OrientEdge) element;
-			String name = orientEdge.getType().getName();
+			String name = orientEdge.label();
 			return this.elementTypCache.forName(name);
 		}
 		return null;
@@ -93,7 +92,7 @@ public class OrientDBTypeResolver implements TypeResolver {
 
 	@Override
 	public void init(Element element, Class<?> kind) {
-		// NOP
+		// NOOP
 	}
 
 	@Override
@@ -102,35 +101,20 @@ public class OrientDBTypeResolver implements TypeResolver {
 	}
 
 	@Override
-	public VertexTraversal<?, ?, ?> hasType(VertexTraversal<?, ?, ?> traverser, Class<?> type) {
+	public <P extends Element, T extends Element> GraphTraversal<P, T> hasType(GraphTraversal<P, T> traverser, Class<?> type) {
 		return traverser.filter(vertex -> {
-			Class<?> vertexType = resolve(vertex.getElement());
+			Class<?> vertexType = resolve(vertex.get());
 			return vertexType == type;
 		});
 	}
 
 	@Override
-	public EdgeTraversal<?, ?, ?> hasType(EdgeTraversal<?, ?, ?> traverser, Class<?> type) {
-		return traverser.filter(edge -> {
-			Class<?> edgeType = resolve(edge.getElement());
-			return edgeType == type;
-		});
-	}
-
-	@Override
-	public VertexTraversal<?, ?, ?> hasNotType(VertexTraversal<?, ?, ?> traverser, Class<?> type) {
+	public <P extends Element, T extends Element> GraphTraversal<P, T> hasNotType(GraphTraversal<P, T> traverser, Class<?> type) {
 		return traverser.filter(vertex -> {
-			Class<?> vertexType = resolve(vertex.getElement());
+			Class<?> vertexType = resolve(vertex.get());
 			return vertexType == type;
 		});
-	}
 
-	@Override
-	public EdgeTraversal<?, ?, ?> hasNotType(EdgeTraversal<?, ?, ?> traverser, Class<?> type) {
-		return traverser.filter(edge -> {
-			Class<?> edgeType = resolve(edge.getElement());
-			return edgeType == type;
-		});
 	}
 
 }

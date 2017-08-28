@@ -34,7 +34,7 @@ import com.syncleus.ferma.ext.AbstractInterceptingVertexFrame;
 public class Person extends AbstractInterceptingVertexFrame {
 
 	public List<? extends Person> getFriends() {
-		return out("HAS_FRIEND").has(Person.class).toListExplicit(Person.class);
+		return traverse((g) -> hasType(g.out("HAS_FRIEND"), Person.class)).toListExplicit(Person.class);
 	}
 
 	public void addFriend(Person person) {

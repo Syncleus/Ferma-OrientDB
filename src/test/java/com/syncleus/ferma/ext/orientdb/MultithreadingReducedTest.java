@@ -74,7 +74,7 @@ public class MultithreadingReducedTest extends AbstractOrientDBTest {
 				manipulatePerson(tx.getGraph(), p);
 				String name = "newName";
 				p.setName(name);
-				reloaded = tx.getGraph().v().has(Person.class).has("name", name).nextOrDefaultExplicit(Person.class, null);
+				reloaded = tx.getGraph().traverse((g)-> tx.getGraph().getTypeResolver().hasType(g.V(),Person.class).has("name", name)).nextOrDefaultExplicit(Person.class, null);
 				System.out.println(reloaded.getName());
 				assertNotNull(reloaded);
 				manipulatePerson(tx.getGraph(), reloaded);

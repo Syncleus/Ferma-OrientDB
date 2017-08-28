@@ -26,17 +26,21 @@
 package com.syncleus.ferma.ext;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedVertex;
 
 import com.syncleus.ferma.AbstractVertexFrame;
 import com.syncleus.ferma.FramedGraph;
 import com.syncleus.ferma.VertexFrame;
+import com.syncleus.ferma.WrappedFramedGraph;
 import com.syncleus.ferma.tx.Tx;
 import com.syncleus.ferma.typeresolvers.PolymorphicTypeResolver;
-import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.util.wrappers.wrapped.WrappedElement;
-import com.tinkerpop.blueprints.util.wrappers.wrapped.WrappedVertex;
 
 /**
  * Abstract implementation of a orientdb specific ferma vertex frame. The internal orientdb vertex id is stored in order to reload the vertex if the vertex
@@ -52,7 +56,14 @@ public class AbstractInterceptingVertexFrame extends AbstractVertexFrame {
 	/**
 	 * Thread specific reference to the underlying orientdb graph element.
 	 */
-	public ThreadLocal<Element> threadLocalElement = ThreadLocal.withInitial(() -> ((WrappedVertex) getGraph().getVertex(id)).getBaseElement());
+	public ThreadLocal<Vertex> threadLocalVertex = ThreadLocal.withInitial(() -> {
+		OrientGraph baseGraph = ((WrappedFramedGraph<OrientGraph>) getGraph()).getBaseGraph();
+		Iterator<Vertex> it = baseGraph.vertices(id);
+		if (it.hasNext()) {
+			return it.next();
+		}
+		return null;
+	});
 
 	@Override
 	protected void init() {
@@ -62,7 +73,7 @@ public class AbstractInterceptingVertexFrame extends AbstractVertexFrame {
 	@Override
 	protected void init(FramedGraph graph, Element element) {
 		super.init(graph, element);
-		this.id = element.getId();
+		this.id = element.id();
 	}
 
 	/**
@@ -130,7 +141,8 @@ public class AbstractInterceptingVertexFrame extends AbstractVertexFrame {
 	/**
 	 * Set the uuid property value.
 	 * 
-	 * @param uuid UUID value
+	 * @param uuid
+	 *            UUID value
 	 */
 	public void setUuid(String uuid) {
 		setProperty("uuid", uuid);
@@ -162,13 +174,17 @@ public class AbstractInterceptingVertexFrame extends AbstractVertexFrame {
 
 	@Override
 	public Vertex getElement() {
-		Element vertex = threadLocalElement.get();
-
+		threadLocalVertex.remove();
+		Vertex vertex = threadLocalVertex.get();
 		// Unwrap wrapped vertex
-		if (vertex instanceof WrappedElement) {
-			vertex = (Vertex) ((WrappedElement) vertex).getBaseElement();
+		if (vertex instanceof WrappedVertex) {
+			vertex = (Vertex) ((WrappedVertex<Vertex>) vertex).getBaseVertex();
 		}
-		return (Vertex) vertex;
+		return vertex;
+	}
+
+	public <P extends Element, T extends Element> GraphTraversal<P, T> hasType(GraphTraversal<P, T> traverser, Class<?> type) {
+		return getGraph().getTypeResolver().hasType(traverser, type);
 	}
 
 }

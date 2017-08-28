@@ -25,26 +25,31 @@
  */
 package com.syncleus.ferma.ext;
 
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedEdge;
+
 import com.syncleus.ferma.AbstractEdgeFrame;
 import com.syncleus.ferma.FramedGraph;
+import com.syncleus.ferma.WrappedFramedGraph;
 import com.syncleus.ferma.annotations.GraphElement;
 import com.syncleus.ferma.tx.Tx;
 import com.syncleus.ferma.typeresolvers.PolymorphicTypeResolver;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.util.wrappers.wrapped.WrappedEdge;
-import com.tinkerpop.blueprints.util.wrappers.wrapped.WrappedElement;
 
 @GraphElement
 public class AbstractInterceptingEdgeFrame extends AbstractEdgeFrame {
 
 	private Object id;
-	public ThreadLocal<Element> threadLocalElement = ThreadLocal.withInitial(() -> ((WrappedEdge) getGraph().getEdge(id)).getBaseElement());
+	public ThreadLocal<Edge> threadLocalEdge = ThreadLocal.withInitial(() -> {
+		OrientGraph baseGraph = ((WrappedFramedGraph<OrientGraph>) getGraph()).getBaseGraph();
+		return baseGraph.edges(id).next();
+	});
 
 	@Override
 	protected void init(FramedGraph graph, Element element) {
 		super.init(graph, element);
-		this.id = element.getId();
+		this.id = element.id();
 	}
 
 	public String getFermaType() {
@@ -66,13 +71,12 @@ public class AbstractInterceptingEdgeFrame extends AbstractEdgeFrame {
 
 	@Override
 	public Edge getElement() {
-		Element edge = threadLocalElement.get();
-
+		Edge edge = threadLocalEdge.get();
 		// Unwrap wrapped edge
-		if (edge instanceof WrappedElement) {
-			edge = (Edge) ((WrappedElement) edge).getBaseElement();
+		if (edge instanceof WrappedEdge) {
+			edge = ((WrappedEdge<Edge>) edge).getBaseEdge();
 		}
-		return (Edge) edge;
+		return edge;
 	}
 
 }

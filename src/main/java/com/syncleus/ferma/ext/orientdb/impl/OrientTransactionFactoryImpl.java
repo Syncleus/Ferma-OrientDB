@@ -25,9 +25,13 @@
  */
 package com.syncleus.ferma.ext.orientdb.impl;
 
-import com.syncleus.ferma.ext.orientdb.OrientTransactionFactory;
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
+
+import com.syncleus.ferma.ext.orientdb.DelegatingFramedOrientGraph;
+import com.syncleus.ferma.ext.orientdb.OrientDBTx;
 import com.syncleus.ferma.ext.orientdb.OrientDBTypeResolver;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
+import com.syncleus.ferma.ext.orientdb.OrientTransactionFactory;
+import com.syncleus.ferma.tx.Tx;
 
 public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 
@@ -50,9 +54,20 @@ public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 		return typeResolver;
 	}
 
-	@Override
+	/**
+	 * Return the maxium count a transaction should be repeated if a retry is needed.
+	 * 
+	 * @return
+	 */
 	public int getMaxRetry() {
-		return 10;
+		return 20;
+	}
+
+	@Override
+	public Tx createTx() {
+		DelegatingFramedOrientGraph framedGraph = new DelegatingFramedOrientGraph(getFactory().getTx(), getTypeResolver());
+		OrientDBTx tx = new OrientDBTx(getFactory().getTx().tx(), framedGraph);
+		return tx;
 	}
 
 }

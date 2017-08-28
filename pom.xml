@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -11,15 +12,15 @@
     <groupId>com.syncleus.ferma</groupId>
     <artifactId>ferma-orientdb</artifactId>
     <packaging>jar</packaging>
-    <version>2.3.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
 
     <name>Ferma</name>
     <description>An OrientDB extension for the Ferma ORM</description>
     <url>https://github.com/Syncleus/ferma-orientdb.git</url>
-    
+
     <properties>
-        <ferma.version>2.3.1-SNAPSHOT</ferma.version>
-        <orientdb.version>2.2.24</orientdb.version>
+        <ferma.version>3.1.0-SNAPSHOT</ferma.version>
+        <orientdb.version>3.0.0m2</orientdb.version>
     </properties>
 
     <licenses>
@@ -50,7 +51,7 @@
         <system>GitHub</system>
         <url>https://github.com/Syncleus/ferma-orientdb/issues</url>
     </issueManagement>
-    
+
     <mailingLists>
         <mailingList>
             <name>Syncleus Announcements</name>
@@ -128,6 +129,11 @@
         <dependency>
             <groupId>com.orientechnologies</groupId>
             <artifactId>orientdb-graphdb</artifactId>
+            <version>${orientdb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-gremlin</artifactId>
             <version>${orientdb.version}</version>
         </dependency>
 

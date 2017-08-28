@@ -25,12 +25,12 @@
  */
 package com.syncleus.ferma.ext.orientdb;
 
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
 import org.junit.Before;
 
 import com.syncleus.ferma.FramedGraph;
 import com.syncleus.ferma.ext.orientdb.impl.OrientTransactionFactoryImpl;
 import com.syncleus.ferma.ext.orientdb.model.Person;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 public class AbstractOrientDBTest {
 

@@ -96,7 +96,7 @@ public class MultithreadingTest extends AbstractOrientDBTest {
 		});
 
 		try (Tx tx = graph.tx()) {
-			for (VertexFrame vertex : tx.getGraph().v().toList()) {
+			for (VertexFrame vertex : tx.getGraph().traverse((g) -> g.V()).toList(VertexFrame.class)) {
 				System.out.println(vertex.toString());
 			}
 		}

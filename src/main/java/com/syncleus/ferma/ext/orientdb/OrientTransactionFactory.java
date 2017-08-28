@@ -1,12 +1,13 @@
 package com.syncleus.ferma.ext.orientdb;
 
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
+
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.exception.OSchemaException;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.syncleus.ferma.tx.Tx;
 import com.syncleus.ferma.tx.TxFactory;
 import com.syncleus.ferma.tx.TxHandler;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 public interface OrientTransactionFactory extends TxFactory {
 
@@ -29,11 +30,6 @@ public interface OrientTransactionFactory extends TxFactory {
 	 * @return
 	 */
 	int getMaxRetry();
-
-	@Override
-	default Tx tx() {
-		return new OrientDBTx(getFactory(), getTypeResolver());
-	}
 
 	@Override
 	default <T> T tx(TxHandler<T> txHandler) {

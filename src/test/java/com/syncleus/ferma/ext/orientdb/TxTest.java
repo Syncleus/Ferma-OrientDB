@@ -28,6 +28,7 @@ package com.syncleus.ferma.ext.orientdb;
 import static com.syncleus.ferma.ext.orientdb.util.TestUtils.run;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeoutException;
@@ -43,7 +44,7 @@ public class TxTest extends AbstractOrientDBTest {
 	private Person p;
 
 	@Test
-	public void testTxConflictHandling() throws InterruptedException, BrokenBarrierException, TimeoutException {
+	public void testTxConflictHandling() throws InterruptedException, BrokenBarrierException, TimeoutException, IOException {
 		// Test creation of user in current thread
 		int nFriendsBefore;
 		try (Tx tx = graph.tx()) {

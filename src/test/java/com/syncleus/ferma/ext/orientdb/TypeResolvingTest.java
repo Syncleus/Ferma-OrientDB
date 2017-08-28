@@ -40,10 +40,11 @@ public class TypeResolvingTest extends AbstractOrientDBTest {
 			Job jobCTO = tx.getGraph().addFramedVertex(Job.class);
 			jobCTO.setName("Chief Technology Officer");
 
-			VertexFrame frame = tx.getGraph().v().has(Job.class).next();
+			VertexFrame frame = tx.getGraph().traverse((g) -> g.V()).nextExplicit(VertexFrame.class);
 			System.out.println(frame.getClass().getName());
 
-			IJob job = tx.getGraph().v().has(Job.class).nextOrDefaultExplicit(Job.class, null);
+			IJob job = tx.getGraph().traverse((g) -> tx.getGraph().getTypeResolver().hasType(g.V(), Job.class)).nextOrDefaultExplicit(Job.class,
+					null);
 			System.out.println(job.getName());
 		}
 	}

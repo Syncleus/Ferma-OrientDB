@@ -34,7 +34,7 @@ import com.syncleus.ferma.ext.AbstractInterceptingVertexFrame;
 public class Job extends AbstractInterceptingVertexFrame implements IJob {
 
 	public List<? extends Person> getEmployee() {
-		return out("HAS_EMPLOYEE").toListExplicit(Person.class);
+		return traverse((g) -> g.out("HAS_EMPLOYEE")).toListExplicit(Person.class);
 	}
 
 	public void addEmployee(Person person) {

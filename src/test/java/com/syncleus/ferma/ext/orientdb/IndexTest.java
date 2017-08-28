@@ -32,17 +32,16 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
+import org.apache.tinkerpop.gremlin.orientdb.OrientVertex;
 import org.junit.Test;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.syncleus.ferma.ext.orientdb.model.Group;
 import com.syncleus.ferma.ext.orientdb.model.Person;
 import com.syncleus.ferma.tx.Tx;
-import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
-import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 
 public class IndexTest extends AbstractOrientDBTest {
 
@@ -54,7 +53,7 @@ public class IndexTest extends AbstractOrientDBTest {
 		try (Tx tx = graph.tx()) {
 			Person p = tx.getGraph().addFramedVertex(Person.class);
 			p.setName("personName");
-			assertEquals(Person.class.getSimpleName(), ((OrientVertex) p.getElement()).getLabel());
+			assertEquals(Person.class.getSimpleName(), ((OrientVertex) p.getElement()).label());
 			tx.success();
 		}
 	}
@@ -65,16 +64,16 @@ public class IndexTest extends AbstractOrientDBTest {
 	private void setupTypesAndIndices() {
 		try (Tx tx = graph.tx()) {
 			OrientGraph g = ((OrientGraph) ((DelegatingFramedOrientGraph) tx.getGraph()).getBaseGraph());
-
-			OrientEdgeType e = g.createEdgeType("HAS_MEMBER");
+			ODatabaseDocument rawDb = g.getRawDatabase();
+			OClass e = rawDb.createEdgeClass("HAS_MEMBER");
 			e.createProperty("in", OType.LINK);
 			e.createProperty("out", OType.LINK);
 			e.createIndex("e.has_member", OClass.INDEX_TYPE.UNIQUE_HASH_INDEX, "out", "in");
 
-			OrientVertexType v = g.createVertexType(Group.class.getSimpleName(), "V");
+			OClass v = rawDb.createVertexClass(Group.class.getSimpleName());
 			v.createProperty("name", OType.STRING);
 
-			v = g.createVertexType(Person.class.getSimpleName(), "V");
+			v = rawDb.createVertexClass(Person.class.getSimpleName());
 			v.createProperty("name", OType.STRING);
 			v.createIndex(Person.class.getSimpleName() + ".name", OClass.INDEX_TYPE.UNIQUE_HASH_INDEX, "name");
 		}
@@ -107,7 +106,7 @@ public class IndexTest extends AbstractOrientDBTest {
 			for (int i = 0; i < nChecks; i++) {
 				int nPerson = (int) (Math.random() * persons.size());
 				String name = "personName_" + nPerson;
-				assertTrue(tx.getGraph().getFramedVerticesExplicit("Person.name", name, Person.class).iterator().hasNext());
+				assertTrue(tx.getGraph().getFramedVerticesExplicit("Person.name", name, Person.class).hasNext());
 			}
 			long dur = System.currentTimeMillis() - start;
 			double perCheck = ((double) dur / (double) nChecks);
