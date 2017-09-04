@@ -25,6 +25,7 @@
  */
 package com.syncleus.ferma.ext.orientdb.impl;
 
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
 
 import com.syncleus.ferma.ext.orientdb.DelegatingFramedOrientGraph;
@@ -65,8 +66,9 @@ public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 
 	@Override
 	public Tx createTx() {
-		DelegatingFramedOrientGraph framedGraph = new DelegatingFramedOrientGraph(getFactory().getTx(), getTypeResolver());
-		OrientDBTx tx = new OrientDBTx(getFactory().getTx().tx(), framedGraph);
+		OrientGraph rawTx = getFactory().getTx();
+		DelegatingFramedOrientGraph framedGraph = new DelegatingFramedOrientGraph(rawTx, getTypeResolver());
+		OrientDBTx tx = new OrientDBTx(rawTx.tx(), framedGraph);
 		return tx;
 	}
 

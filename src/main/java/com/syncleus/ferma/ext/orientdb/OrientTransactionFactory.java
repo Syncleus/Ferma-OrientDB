@@ -6,8 +6,8 @@ import com.orientechnologies.orient.core.exception.OConcurrentModificationExcept
 import com.orientechnologies.orient.core.exception.OSchemaException;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.syncleus.ferma.tx.Tx;
+import com.syncleus.ferma.tx.TxAction;
 import com.syncleus.ferma.tx.TxFactory;
-import com.syncleus.ferma.tx.TxHandler;
 
 public interface OrientTransactionFactory extends TxFactory {
 
@@ -32,7 +32,7 @@ public interface OrientTransactionFactory extends TxFactory {
 	int getMaxRetry();
 
 	@Override
-	default <T> T tx(TxHandler<T> txHandler) {
+	default <T> T tx(TxAction<T> txHandler) {
 		/**
 		 * OrientDB uses the MVCC pattern which requires a retry of the code that manipulates the graph in cases where for example an
 		 * {@link OConcurrentModificationException} is thrown.
