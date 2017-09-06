@@ -76,6 +76,7 @@ public class IndexTest extends AbstractOrientDBTest {
 			v = rawDb.createVertexClass(Person.class.getSimpleName());
 			v.createProperty("name", OType.STRING);
 			v.createIndex(Person.class.getSimpleName() + ".name", OClass.INDEX_TYPE.UNIQUE_HASH_INDEX, "name");
+			tx.success();
 		}
 
 	}
@@ -106,7 +107,8 @@ public class IndexTest extends AbstractOrientDBTest {
 			for (int i = 0; i < nChecks; i++) {
 				int nPerson = (int) (Math.random() * persons.size());
 				String name = "personName_" + nPerson;
-				assertTrue(tx.getGraph().getFramedVerticesExplicit("Person.name", name, Person.class).hasNext());
+				assertTrue("Person with name {" + name + "} could not be loaded from the index.",
+						tx.getGraph().getFramedVerticesExplicit("name", name, Person.class).hasNext());
 			}
 			long dur = System.currentTimeMillis() - start;
 			double perCheck = ((double) dur / (double) nChecks);
