@@ -15,12 +15,12 @@ To include OrientDB extensions to Ferma include the following Maven dependencies
 <dependency>
     <groupId>com.syncleus.ferma</groupId>
     <artifactId>ferma</artifactId>
-    <version>2.3.0</version>
+    <version>3.1.0</version>
 </dependency>
 <dependency>
     <groupId>com.syncleus.ferma</groupId>
     <artifactId>ferma-orientdb</artifactId>
-    <version>2.3.0</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
@@ -28,38 +28,41 @@ To include OrientDB extensions to Ferma include the following Maven dependencies
 
 ```java
     // Setup the orientdb graph factory from which the transaction factory will create transactions
-    OrientGraphFactory graphFactory = new OrientGraphFactory("memory:tinkerpop").setupPool(4, 10);
-    TxFactory graph = new OrientTransactionFactoryImpl(graphFactory, "com.syncleus.ferma.ext.orientdb.model");
+    try (OrientGraphFactory graphFactory = new OrientGraphFactory("memory:tinkerpop")) {
+        TxFactory graph = new OrientTransactionFactoryImpl(graphFactory, "com.syncleus.ferma.ext.orientdb.model");
 
-    try (Tx tx = graph.tx()) {
-        Person joe = tx.getGraph().addFramedVertex(Person.class);
-        joe.setName("Joe");
-        Person hugo = tx.getGraph().addFramedVertex(Person.class);
-        hugo.setName("Hugo");
+        try (Tx tx = graph.tx()) {
+            Person joe = tx.getGraph().addFramedVertex(Person.class);
+            joe.setName("Joe");
+            Person hugo = tx.getGraph().addFramedVertex(Person.class);
+            hugo.setName("Hugo");
 
-        // Both are mutal friends
-        joe.addFriend(hugo);
-        hugo.addFriend(joe);
-        tx.success();
-    }
-
-    try (Tx tx = graph.tx()) {
-        for (Person p : tx.getGraph().getFramedVerticesExplicit(Person.class)) {
-            System.out.println("Found person with name: " + p.getName());
+            // Both are mutal friends
+            joe.addFriend(hugo);
+            hugo.addFriend(joe);
+            tx.success();
         }
-    }
 
-    String result = graph.tx((tx) -> {
-        Person hugo = tx.getGraph().getFramedVertices("name", "Hugo", Person.class).iterator().next();
-        StringBuffer sb = new StringBuffer();
-        sb.append("Hugo's friends:");
-
-        for (Person p : hugo.getFriends()) {
-            sb.append(" " + p.getName());
+        try (Tx tx = graph.tx()) {
+            Iterator<? extends Person> it = tx.getGraph().getFramedVerticesExplicit(Person.class);
+            Iterable<? extends Person> it2 = toIterable(it);
+            for (Person p : it2) {
+                System.out.println("Found person with name: " + p.getName());
+            }
         }
-        return sb.toString();
-    });
-    System.out.println(result);
+
+        String result = graph.tx((tx) -> {
+            Person hugo = tx.getGraph().getFramedVertices("name", "Hugo", Person.class).next();
+            StringBuffer sb = new StringBuffer();
+            sb.append("Hugo's friends:");
+
+            for (Person p : hugo.getFriends()) {
+                sb.append(" " + p.getName());
+            }
+            return sb.toString();
+        });
+        System.out.println(result);
+    }
 ```
 
 ## Obtaining the Source
