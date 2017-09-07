@@ -18,8 +18,8 @@
     <url>https://github.com/Syncleus/ferma-orientdb.git</url>
     
     <properties>
-        <ferma.version>2.3.1-SNAPSHOT</ferma.version>
-        <orientdb.version>2.2.24</orientdb.version>
+        <ferma.version>2.4.0</ferma.version>
+        <orientdb.version>2.2.26</orientdb.version>
     </properties>
 
     <licenses>

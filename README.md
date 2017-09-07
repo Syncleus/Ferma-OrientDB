@@ -15,7 +15,7 @@ To include OrientDB extensions to Ferma include the following Maven dependencies
 <dependency>
     <groupId>com.syncleus.ferma</groupId>
     <artifactId>ferma</artifactId>
-    <version>2.3.1</version>
+    <version>2.4.0</version>
 </dependency>
 <dependency>
     <groupId>com.syncleus.ferma</groupId>
