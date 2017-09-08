@@ -29,7 +29,7 @@ To include OrientDB extensions to Ferma include the following Maven dependencies
 ```java
     // Setup the orientdb graph factory from which the transaction factory will create transactions
     try (OrientGraphFactory graphFactory = new OrientGraphFactory("memory:tinkerpop")) {
-        TxFactory graph = new OrientTransactionFactoryImpl(graphFactory, "com.syncleus.ferma.ext.orientdb.model");
+        TxFactory graph = new OrientTransactionFactoryImpl(graphFactory, false, "com.syncleus.ferma.ext.orientdb.model");
 
         try (Tx tx = graph.tx()) {
             Person joe = tx.getGraph().addFramedVertex(Person.class);

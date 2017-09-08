@@ -40,7 +40,7 @@ public class AbstractOrientDBTest {
 	@Before
 	public void setupDB() {
 		graphFactory = new OrientGraphFactory("memory:tinkerpop" + System.currentTimeMillis()).setupPool(4, 10);
-		graph = new OrientTransactionFactoryImpl(graphFactory, "com.syncleus.ferma.ext.orientdb.model");
+		graph = new OrientTransactionFactoryImpl(graphFactory, false, "com.syncleus.ferma.ext.orientdb.model");
 	}
 
 	/**

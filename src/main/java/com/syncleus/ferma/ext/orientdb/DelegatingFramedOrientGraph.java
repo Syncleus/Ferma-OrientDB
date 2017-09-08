@@ -31,14 +31,16 @@ import com.syncleus.ferma.ClassInitializer;
 import com.syncleus.ferma.DefaultClassInitializer;
 import com.syncleus.ferma.DelegatingFramedGraph;
 import com.syncleus.ferma.VertexFrame;
+import com.syncleus.ferma.framefactories.FrameFactory;
 import com.syncleus.ferma.tx.Tx;
 import com.syncleus.ferma.tx.WrappedFramedTxGraph;
 import com.syncleus.ferma.typeresolvers.TypeResolver;
 
+
 public class DelegatingFramedOrientGraph extends DelegatingFramedGraph<OrientGraph> implements WrappedFramedTxGraph<OrientGraph> {
 
-	public DelegatingFramedOrientGraph(OrientGraph delegate, TypeResolver typeResolver) {
-		super(delegate, typeResolver);
+	public DelegatingFramedOrientGraph(OrientGraph delegate, FrameFactory factory, TypeResolver typeResolver) {
+		super(delegate, factory, typeResolver);
 	}
 
 	@Override

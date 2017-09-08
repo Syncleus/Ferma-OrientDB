@@ -28,21 +28,43 @@ package com.syncleus.ferma.ext.orientdb.impl;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
 
+import com.syncleus.ferma.ReflectionCache;
 import com.syncleus.ferma.ext.orientdb.DelegatingFramedOrientGraph;
 import com.syncleus.ferma.ext.orientdb.OrientDBTx;
 import com.syncleus.ferma.ext.orientdb.OrientDBTypeResolver;
 import com.syncleus.ferma.ext.orientdb.OrientTransactionFactory;
+import com.syncleus.ferma.framefactories.DefaultFrameFactory;
+import com.syncleus.ferma.framefactories.FrameFactory;
+import com.syncleus.ferma.framefactories.annotation.AnnotationFrameFactory;
 import com.syncleus.ferma.tx.Tx;
 
 public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 
 	protected OrientGraphFactory factory;
 
+	private FrameFactory frameFactory;
+
 	private OrientDBTypeResolver typeResolver;
 
-	public OrientTransactionFactoryImpl(OrientGraphFactory factory, String... basePaths) {
+	/**
+	 * Create a new orientdb transaction factory.
+	 * 
+	 * @param factory
+	 * @param annotationsSupported
+	 *            True if annotated classes will be supported, false otherwise.
+	 * @param basePaths
+	 * 
+	 */
+	public OrientTransactionFactoryImpl(OrientGraphFactory factory, boolean annotationsSupported, String... basePaths) {
 		this.factory = factory;
 		this.typeResolver = new OrientDBTypeResolver(basePaths);
+
+		if (annotationsSupported) {
+			final ReflectionCache reflections = new ReflectionCache();
+			this.frameFactory = new AnnotationFrameFactory(reflections);
+		} else {
+			this.frameFactory = new DefaultFrameFactory();
+		}
 	}
 
 	@Override
@@ -55,8 +77,18 @@ public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 		return typeResolver;
 	}
 
+	@Override
+	public FrameFactory getFrameFactory() {
+		return frameFactory;
+	}
+
+	@Override
+	public void setFrameFactory(FrameFactory frameFactory) {
+		this.frameFactory = frameFactory;
+	}
+
 	/**
-	 * Return the maxium count a transaction should be repeated if a retry is needed.
+	 * Return the maximum count a transaction should be repeated if a retry is needed.
 	 * 
 	 * @return
 	 */
@@ -67,7 +99,7 @@ public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 	@Override
 	public Tx createTx() {
 		OrientGraph rawTx = getFactory().getTx();
-		DelegatingFramedOrientGraph framedGraph = new DelegatingFramedOrientGraph(rawTx, getTypeResolver());
+		DelegatingFramedOrientGraph framedGraph = new DelegatingFramedOrientGraph(rawTx, getFrameFactory(), getTypeResolver());
 		OrientDBTx tx = new OrientDBTx(rawTx.tx(), framedGraph);
 		return tx;
 	}
