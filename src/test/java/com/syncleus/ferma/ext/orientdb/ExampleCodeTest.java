@@ -23,7 +23,6 @@ import org.junit.Test;
 import com.syncleus.ferma.ext.orientdb.impl.OrientTransactionFactoryImpl;
 import com.syncleus.ferma.ext.orientdb.model.Person;
 import com.syncleus.ferma.tx.Tx;
-import com.syncleus.ferma.tx.TxFactory;
 
 /**
  * Test the example code of the readme to ensure that it is working
@@ -38,7 +37,8 @@ public class ExampleCodeTest {
 	public void testExample() {
 		// Setup the orientdb graph factory from which the transaction factory will create transactions
 		try (OrientGraphFactory graphFactory = new OrientGraphFactory("memory:tinkerpop")) {
-			TxFactory graph = new OrientTransactionFactoryImpl(graphFactory, false, "com.syncleus.ferma.ext.orientdb.model");
+			OrientTransactionFactory graph = new OrientTransactionFactoryImpl(graphFactory, false, "com.syncleus.ferma.ext.orientdb.model");
+			graph.setupElementClasses();
 
 			try (Tx tx = graph.tx()) {
 				Person joe = tx.getGraph().addFramedVertex(Person.class);

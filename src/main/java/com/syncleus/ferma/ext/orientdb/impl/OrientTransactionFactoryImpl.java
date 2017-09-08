@@ -25,10 +25,14 @@
  */
 package com.syncleus.ferma.ext.orientdb.impl;
 
+import java.util.Set;
+
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
 
+import com.syncleus.ferma.EdgeFrame;
 import com.syncleus.ferma.ReflectionCache;
+import com.syncleus.ferma.VertexFrame;
 import com.syncleus.ferma.ext.orientdb.DelegatingFramedOrientGraph;
 import com.syncleus.ferma.ext.orientdb.OrientDBTx;
 import com.syncleus.ferma.ext.orientdb.OrientDBTypeResolver;
@@ -85,6 +89,41 @@ public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 	@Override
 	public void setFrameFactory(FrameFactory frameFactory) {
 		this.frameFactory = frameFactory;
+	}
+
+	@Override
+	public void setupElementClasses() {
+		Set<Class<?>> classes = typeResolver.getGraphElementClasses();
+		for (Class<?> clazz : classes) {
+			if (VertexFrame.class.isAssignableFrom(clazz)) {
+				addVertexClass(clazz.getSimpleName(), "V");
+			}
+			if (EdgeFrame.class.isAssignableFrom(clazz)) {
+				addEdgeClass(clazz.getSimpleName());
+			}
+		}
+	}
+
+	@Override
+	public void addEdgeClass(String label) {
+		OrientGraph noTx = factory.getNoTx();
+		try {
+			noTx.createEdgeClass(label);
+			noTx.commit();
+		} finally {
+			noTx.close();
+		}
+	}
+
+	@Override
+	public void addVertexClass(String className, String superClassName) {
+		OrientGraph noTx = factory.getNoTx();
+		try {
+			noTx.createClass(className, superClassName);
+			noTx.commit();
+		} finally {
+			noTx.close();
+		}
 	}
 
 	/**

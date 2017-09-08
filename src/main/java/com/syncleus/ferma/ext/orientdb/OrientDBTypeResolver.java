@@ -25,17 +25,21 @@
  */
 package com.syncleus.ferma.ext.orientdb;
 
+import java.util.Set;
+
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.tinkerpop.gremlin.orientdb.OrientEdge;
 import org.apache.tinkerpop.gremlin.orientdb.OrientVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedElement;
+import org.reflections.Reflections;
 
 import com.syncleus.ferma.AbstractEdgeFrame;
 import com.syncleus.ferma.AbstractVertexFrame;
 import com.syncleus.ferma.EdgeFrame;
 import com.syncleus.ferma.VertexFrame;
+import com.syncleus.ferma.annotations.GraphElement;
 import com.syncleus.ferma.ext.ElementTypeClassCache;
 import com.syncleus.ferma.typeresolvers.TypeResolver;
 
@@ -43,8 +47,11 @@ public class OrientDBTypeResolver implements TypeResolver {
 
 	private final ElementTypeClassCache elementTypCache;
 
-	public OrientDBTypeResolver(String... packagePaths) {
-		this.elementTypCache = new ElementTypeClassCache(packagePaths);
+	private String[] basePath;
+
+	public OrientDBTypeResolver(String... basePath) {
+		this.basePath = basePath;
+		this.elementTypCache = new ElementTypeClassCache(basePath);
 	}
 
 	@Override
@@ -114,7 +121,16 @@ public class OrientDBTypeResolver implements TypeResolver {
 			Class<?> vertexType = resolve(vertex.get());
 			return vertexType == type;
 		});
+	}
 
+	/**
+	 * Return all found graph element classes.
+	 * 
+	 * @return
+	 */
+	public Set<Class<?>> getGraphElementClasses() {
+		Set<Class<?>> graphTypeClasses = new Reflections(basePath).getTypesAnnotatedWith(GraphElement.class);
+		return graphTypeClasses;
 	}
 
 }

@@ -101,4 +101,24 @@ public interface OrientTransactionFactory extends TxFactory {
 	 */
 	void setFrameFactory(FrameFactory frameFactory);
 
+	/**
+	 * Setup all element classes in orientdb for the found graph elements.
+	 */
+	void setupElementClasses();
+
+	/**
+	 * Add a new vertex class.
+	 * 
+	 * @param typeName
+	 * @param superTypeName
+	 */
+	void addVertexClass(String typeName, String superTypeName);
+
+	/**
+	 * Add a new edge class.
+	 * 
+	 * @param label
+	 */
+	void addEdgeClass(String label);
+
 }
