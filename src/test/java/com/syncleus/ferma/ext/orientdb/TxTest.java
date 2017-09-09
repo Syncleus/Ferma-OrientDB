@@ -71,6 +71,23 @@ public class TxTest extends AbstractOrientDBTest {
 	}
 
 	/**
+	 * Verify that nested transactions work and persist the data correctly.
+	 */
+	@Test
+	public void nestedTxTest() {
+		Person p;
+		try (Tx tx = graph.tx()) {
+			try (Tx tx2 = graph.tx()) {
+				p = addPersonWithFriends(tx.getGraph(), "Person2");
+				tx2.success();
+			}
+		}
+		try (Tx tx = graph.tx()) {
+			assertEquals("Person2", p.getName());
+		}
+	}
+
+	/**
 	 * Add a new friend to the provided person and wait on the barrier before finishing the transaction. This is useful if you want to produce a
 	 * {@link OConcurrentModificationException}
 	 * 

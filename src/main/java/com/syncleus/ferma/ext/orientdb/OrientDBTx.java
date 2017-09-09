@@ -31,22 +31,51 @@ import org.apache.tinkerpop.gremlin.orientdb.OrientTransaction;
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.syncleus.ferma.tx.AbstractTx;
 import com.syncleus.ferma.tx.FramedTxGraph;
+import com.syncleus.ferma.tx.Tx;
 
 public class OrientDBTx extends AbstractTx<FramedTxGraph> {
+
+	private boolean isNested = false;
 
 	public OrientDBTx(OrientTransaction transaction, DelegatingFramedOrientGraph parentGraph) {
 		super(transaction, parentGraph);
 	}
 
+	/**
+	 * Create new transaction using the given transaction as a base. The created transaction will be regarded as nested transaction.
+	 * 
+	 * @param tx
+	 */
+	public OrientDBTx(Tx tx) {
+		super(tx.getDelegate(), tx.getGraph());
+		this.isNested = true;
+	}
+
 	@Override
 	public void close() {
 		try {
-			super.close();
+			if (!isNested) {
+				Tx.setActive(null);
+			}
+			if (isSuccess()) {
+				commit();
+			} else {
+				rollback();
+			}
+			if (!isNested) {
+				getDelegate().close();
+			}
 			OrientGraph graph = ((OrientGraph) getGraph().getBaseGraph());
 			graph.commit();
-			graph.close();
+			if (!isNested) {
+				graph.close();
+			}
 		} catch (OConcurrentModificationException e) {
 			throw e;
 		}
+	}
+
+	public boolean isNested() {
+		return isNested;
 	}
 }

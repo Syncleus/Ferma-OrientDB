@@ -72,6 +72,18 @@ public class OrientTransactionFactoryImpl implements OrientTransactionFactory {
 	}
 
 	@Override
+	public Tx tx() {
+		Tx tx = Tx.getActive();
+		if (tx != null) {
+			return new OrientDBTx(tx);
+		} else {
+			tx = createTx();
+			Tx.setActive(tx);
+			return tx;
+		}
+	}
+
+	@Override
 	public OrientGraphFactory getFactory() {
 		return factory;
 	}

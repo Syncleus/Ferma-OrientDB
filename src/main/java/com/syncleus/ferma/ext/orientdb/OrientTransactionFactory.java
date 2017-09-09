@@ -42,13 +42,14 @@ public interface OrientTransactionFactory extends TxFactory {
 	OrientDBTypeResolver getTypeResolver();
 
 	/**
+	 * Return the amount of maximum retries for a txAction
 	 * 
 	 * @return
 	 */
 	int getMaxRetry();
 
 	@Override
-	default <T> T tx(TxAction<T> txHandler) {
+	default <T> T tx(TxAction<T> txAction) {
 		/**
 		 * OrientDB uses the MVCC pattern which requires a retry of the code that manipulates the graph in cases where for example an
 		 * {@link OConcurrentModificationException} is thrown.
@@ -58,7 +59,7 @@ public interface OrientTransactionFactory extends TxFactory {
 		for (int retry = 0; retry < getMaxRetry(); retry++) {
 
 			try (Tx tx = tx()) {
-				handlerResult = txHandler.handle(tx);
+				handlerResult = txAction.handle(tx);
 				handlerFinished = true;
 				tx.success();
 			} catch (OSchemaException e) {
