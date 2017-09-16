@@ -3,6 +3,8 @@
 ## 3.0.0
 
 * Upgraded to utilize Ferma 3.1.0 and OrientDB 3.0.0m2. This version will make use of the OrientDB Tinkerpop 3.x API (orientdb-gremlin).
+* Updated the following dependencies
+  * commons-io:commons-io 2.4 -> 2.5
 
 ## 2.3.0
 
