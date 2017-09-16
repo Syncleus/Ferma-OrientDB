@@ -1,4 +1,7 @@
 # Ferma OrientDB Extensions
+[![Javadocs](http://www.javadoc.io/badge/com.syncleus.ferma/ferma-orientdb.svg)](http://www.javadoc.io/doc/com.syncleus.ferma/ferma-orientdb)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.syncleus.ferma/ferma-orientdb/badge.png?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.syncleus.ferma/ferma-orientdb/)
+[![Gitter](https://badges.gitter.im/Syncleus/Ferma.svg)](https://gitter.im/Syncleus/Ferma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Provides wrappers useful for using OrientDB with Ferma.
 
