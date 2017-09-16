@@ -1,5 +1,7 @@
 # Ferma Changelog
 
+## 2.3.2
+
 ## 2.3.1
 
 * Updated the following dependencies
