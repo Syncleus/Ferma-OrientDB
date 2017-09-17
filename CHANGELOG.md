@@ -2,6 +2,8 @@
 
 ## 2.3.2
 
+* Pom now requires maven version 3.0.4.
+
 ## 2.3.1
 
 * Updated the following dependencies

@@ -13,6 +13,10 @@
     <packaging>jar</packaging>
     <version>2.3.2-SNAPSHOT</version>
 
+    <prerequisites>
+        <maven>3.0.4</maven>
+    </prerequisites>
+
     <name>Ferma</name>
     <description>An OrientDB extension for the Ferma ORM</description>
     <url>https://github.com/Syncleus/ferma-orientdb.git</url>
