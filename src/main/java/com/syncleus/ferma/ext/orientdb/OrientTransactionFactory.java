@@ -62,8 +62,6 @@ public interface OrientTransactionFactory extends TxFactory {
 				handlerResult = txAction.handle(tx);
 				handlerFinished = true;
 				tx.success();
-			} catch (OSchemaException e) {
-				throw new RuntimeException("", e);
 			} catch (OConcurrentModificationException e) {
 				try {
 					// Delay the retry by 50ms to give the other transaction a chance to finish
@@ -74,12 +72,6 @@ public interface OrientTransactionFactory extends TxFactory {
 				// Reset previous result
 				handlerFinished = false;
 				handlerResult = null;
-			} catch (ORecordDuplicatedException e) {
-				throw new RuntimeException("Duplicate record detected.", e);
-			} catch (RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("Transaction error", e);
 			}
 			if (handlerFinished) {
 				return handlerResult;
