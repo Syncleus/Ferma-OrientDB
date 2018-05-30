@@ -3,6 +3,8 @@
 ## 3.0.1
 
 * Pom now requires maven version 3.0.4.
+* Update to OrientDB 3.0.1
+* Update to Ferma 3.2.1
 
 ## 3.0.0
 
