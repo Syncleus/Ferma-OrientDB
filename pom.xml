@@ -12,7 +12,7 @@
     <groupId>com.syncleus.ferma</groupId>
     <artifactId>ferma-orientdb</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.1</version>
 
     <prerequisites>
         <maven>3.0.4</maven>
@@ -44,6 +44,7 @@
         <connection>scm:git:https://github.com/Syncleus/ferma-orientdb</connection>
         <developerConnection>scm:git:ssh://github.com/Syncleus/ferma-orientdb</developerConnection>
         <url>https://github.com/Syncleus/ferma-orientdb.git</url>
+        <tag>v3.0.1</tag>
     </scm>
 
     <ciManagement>
