@@ -1,5 +1,7 @@
 # Ferma Changelog
 
+## 3.0.2
+
 ## 3.0.1
 
 * Pom now requires maven version 3.0.4.
@@ -8,7 +10,6 @@
   * Ferma 3.1.0 -> 3.3.0
   * commons-io 2.5 -> 2.6
   * syncleus-pom 4 -> 6
-
 
 ## 3.0.0
 

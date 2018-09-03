@@ -12,7 +12,7 @@
     <groupId>com.syncleus.ferma</groupId>
     <artifactId>ferma-orientdb</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.2-SNAPSHOT</version>
 
     <prerequisites>
         <maven>3.0.4</maven>
