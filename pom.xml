@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.syncleus</groupId>
         <artifactId>syncleus</artifactId>
-        <version>4</version>
+        <version>6</version>
     </parent>
 
     <groupId>com.syncleus.ferma</groupId>
@@ -18,12 +18,12 @@
         <maven>3.0.4</maven>
     </prerequisites>
 
-    <name>Ferma</name>
+    <name>Ferma OrientDB Extension</name>
     <description>An OrientDB extension for the Ferma ORM</description>
     <url>https://github.com/Syncleus/ferma-orientdb.git</url>
 
     <properties>
-        <ferma.version>3.2.1</ferma.version>
+        <ferma.version>3.3.0</ferma.version>
         <orientdb.version>3.0.1</orientdb.version>
     </properties>
 
